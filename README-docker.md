@@ -29,7 +29,7 @@ _____________________
 
 2. Создайте файл .env в корневой папке и добавьте туда свой токен:
 
-```BOT_TOKEN=8200707484:AAG_... (ваш токен от @BotFather)```
+```BOT_TOKEN=YOUR_TOKEN_BOTFATHER```
 
 ```API_URL=http://backend:8000```
 

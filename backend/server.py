@@ -59,3 +59,4 @@ async def get_prediction(request: UserRequest):
             "message": "Unknown model type",
             "status": "error"
         }
+

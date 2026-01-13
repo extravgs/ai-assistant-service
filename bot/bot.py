@@ -3,14 +3,16 @@ import httpx
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
+import os
 
-TOKEN_STR = "YOUR_TOKEN_BOT_FATHER_TG"
-FASTAPI_URL = "http://127.0.0.1:8000/predict"
+TOKEN = os.getenv("BOT_TOKEN")
+FASTAPI_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
-bot = Bot(token=TOKEN_STR)
+bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 user_modes = {}
+
 
 def get_main_keyboard():
     builder = ReplyKeyboardBuilder()
@@ -30,6 +32,7 @@ async def cmd_start(message: types.Message):
     )
 
 
+# Обработка нажатия на кнопки (переключение режима)
 @dp.message(F.text.in_(["🧠 Ассистент (QA)", "🎭 Анализ тональности", "📊 Длина текста"]))
 async def set_mode(message: types.Message):
     if message.text == "🧠 Ассистент (QA)":
@@ -43,8 +46,10 @@ async def set_mode(message: types.Message):
         await message.answer("Режим подсчета слов включен.")
 
 
+# Основной обработчик сообщений
 @dp.message(F.text)
 async def handle_message(message: types.Message):
+    # Получаем режим пользователя (если нет в словаре - ставим assistant)
     current_mode = user_modes.get(message.from_user.id, "assistant")
 
     payload = {
@@ -54,7 +59,7 @@ async def handle_message(message: types.Message):
 
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.post(FASTAPI_URL, json=payload, timeout=15.0)
+            response = await client.post(f"{FASTAPI_URL}/predict", json=payload, timeout=15.0)
             data = response.json()
 
             if data.get("status") == "success":

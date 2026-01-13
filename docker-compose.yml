@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  # Наш сервер с нейросетями
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    restart: always
+
+  # Наш Телеграм-бот
+  bot:
+    build: ./bot
+    depends_on:
+      - backend
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - API_URL=${API_URL}
+    restart: always
